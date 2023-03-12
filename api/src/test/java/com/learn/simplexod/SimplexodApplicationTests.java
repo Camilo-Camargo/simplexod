@@ -1,4 +1,4 @@
-package com.example.simplexod;
+package com.learn.simplexod;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

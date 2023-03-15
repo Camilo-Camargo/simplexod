@@ -1,37 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import springLogo from './assets/spring.svg';
+import { useState } from 'react';
 import './App.css'
+import Equation, { EquationObject } from './components/Equation';
+import ExpressionAdd from './components/ExpressionAdd';
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [objective, setObjective] = useState<Array<number>>([0, 0]);
+  const [constraints, setConstraits] = useState<EquationObject>({
+    independents: [10, 20],
+    dependent: 10,
+    operator: 0
+  });
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://spring.io/" target="_blank">
-          <img src={springLogo} alt="Spring Boot Logo"  className="logo"/>
-        </a>
-      </div>
-      <h1>Vite + React + Spring Boot</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <>
+      <ExpressionAdd
+        terms={objective}
+        setTerms={setObjective}
+        onClick={() => {
+          const terms2 = [...objective];
+          terms2.push(0);
+          setObjective(terms2)
+
+          const constraint2 = {...constraints};
+          constraint2.independents.push(0);
+          setConstraits(constraint2);
+        }}
+      />
+      <Equation
+        equation={constraints}
+        setEquation={setConstraits}
+      />
+    </>
   )
 }
 

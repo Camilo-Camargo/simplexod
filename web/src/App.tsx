@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import './App.css'
-import Equation, { EquationObject } from './components/Equation';
+import { EquationObject } from './components/Equation';
+import Equations from './components/Equations';
 import ExpressionAdd from './components/ExpressionAdd';
 
 function App() {
   const [objective, setObjective] = useState<Array<number>>([0, 0]);
-  const [constraints, setConstraits] = useState<EquationObject>({
-    independents: [10, 20],
-    dependent: 10,
+  const [equations, setEquations] = useState<Array<EquationObject>>([{
+    independents: [0, 0],
+    dependent: 0,
     operator: 0
-  });
+  }]);
   return (
     <>
       <ExpressionAdd
@@ -20,15 +21,18 @@ function App() {
           terms2.push(0);
           setObjective(terms2)
 
-          const constraint2 = {...constraints};
-          constraint2.independents.push(0);
-          setConstraits(constraint2);
+          const equations2 = [...equations];
+          equations2.map((equation) => { equation.independents.push(0) });
+          setEquations(equations2);
         }}
       />
-      <Equation
-        equation={constraints}
-        setEquation={setConstraits}
-      />
+      <div>
+        <Equations
+          objective={objective}
+          equations={equations}
+          setEquations={setEquations}
+        />
+      </div>
     </>
   )
 }

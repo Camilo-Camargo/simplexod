@@ -42,7 +42,6 @@ export default function Equation({
           setEquation(equation2);
         }}
       />
-      {console.log(equation)}
       <Coefficient
         value={equation.dependent}
         onChange={(value) => {

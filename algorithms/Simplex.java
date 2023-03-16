@@ -1,15 +1,27 @@
+
 public class Simplex {
+  enum SimplexMethodType {
+    MAXIMIZE,
+    MINIMIZE
+  }
+
+  enum SimplexOperator {
+    GREATER_THAN,
+    LESS_THAN,
+    EQUALS
+  }
+
   private double[] objective_function;
   private double[][] constraints;
   private double[][] tableau;
-  private String[] contraint_types;
-  private String type;
+  private SimplexOperator[] contraint_types;
+  private SimplexMethodType type;
 
   public Simplex(
       double[] objective_function,
       double[][] constraints,
-      String[] contraint_types,
-      String type) {
+      SimplexOperator[] contraint_types,
+      SimplexMethodType type) {
     this.objective_function = objective_function;
     this.constraints = constraints;
     this.contraint_types = contraint_types;
@@ -88,11 +100,17 @@ public class Simplex {
     int rows = tableau.length;
     int cols = tableau[0].length;
 
-    double mostNegative = 0;
+    double most = 0;
     for (int j = 0; j < cols; j++) {
-      double min = Math.min(tableau[rows - 1][j], mostNegative);
-      if (mostNegative != min) {
-        mostNegative = min;
+      double min = 0;
+      if (this.type == SimplexMethodType.MAXIMIZE) {
+        min = Math.min(tableau[rows - 1][j], most);
+      } else {
+        min = Math.max(tableau[rows - 1][j], most);
+      }
+
+      if (most != min) {
+        most = min;
         pivot = j;
       }
     }
@@ -129,6 +147,8 @@ public class Simplex {
     int entering = pivotColumn();
     int departing = pivotRow(entering);
 
+    System.out.println("Pivot Row: " + departing);
+    System.out.println("Pivot Column: " + departing);
     // divide the pivot row with the pivot number
     double pivotNumber = tableau[departing][entering];
     for (int j = 0; j < cols; j++) {
@@ -160,15 +180,21 @@ public class Simplex {
   }
 
   public static void main(String[] args) {
-    String type = "<=";
-    double[] objective_function = { 40, 30 };
-    String[] contraint_types = {
-        "<=",
-        "<="
+    SimplexMethodType type = SimplexMethodType.MAXIMIZE;
+    double[] objective_function = { 5, 4 };
+    // double[] objective_function = { 50, 80 };
+    SimplexOperator[] contraint_types = {
+        SimplexOperator.LESS_THAN,
+        SimplexOperator.LESS_THAN,
+        SimplexOperator.LESS_THAN,
     };
+
     double[][] constraints = {
-        { 1, 1, 12 },
-        { 2, 1, 16 }
+        // { 1, 2, 120 },
+        // { 1, 1, 90 }
+        { 6, 3, 36 },
+        { 2, 2, 14 },
+        { 5, 10, 60 },
     };
 
     assert (contraint_types.length == constraints.length);

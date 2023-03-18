@@ -14,16 +14,16 @@ public class Simplex {
 
   private double[] objective;
   private double[][] constraints;
-  private double[][] tableau;
+  public double[][] tableau;
   private SimplexOperator[] contraint_types;
   private SimplexMethodType type;
 
   public Simplex(
-      double[] objective_function,
+      double[] objective,
       double[][] constraints,
       SimplexOperator[] contraint_types,
       SimplexMethodType type) {
-    this.objective = objective_function;
+    this.objective = objective;
     this.constraints = constraints;
     this.contraint_types = contraint_types;
     this.type = type;
@@ -141,6 +141,19 @@ public class Simplex {
     return pivot;
   }
 
+  public boolean checkOptimize() {
+    int cols = this.objective.length;
+    int rows = this.constraints.length;
+    double[][] tableau = this.tableau;
+
+    for (int j = 0; j < cols; j++) {
+      if (tableau[rows][j] < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public double[][] iteration() {
     double[][] tableau = this.tableau;
     int rows = tableau.length;
@@ -148,8 +161,6 @@ public class Simplex {
     int entering = pivotColumn();
     int departing = pivotRow(entering);
 
-    System.out.println("Pivot Row: " + departing);
-    System.out.println("Pivot Column: " + departing);
     // divide the pivot row with the pivot number
     double pivotNumber = tableau[departing][entering];
     for (int j = 0; j < cols; j++) {
@@ -165,14 +176,7 @@ public class Simplex {
         }
       }
     }
-
-    // calculate the zj axis
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-
-      }
-    }
-
+    
     return tableau;
   }
 }

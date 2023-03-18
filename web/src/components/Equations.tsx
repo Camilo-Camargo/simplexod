@@ -1,7 +1,8 @@
 import ButtonAdd from "./ButtonAdd";
 import Equation, { EquationObject } from "./Equation";
+import "./Equations.css"
 
-export type EquationsProps = { 
+export type EquationsProps = {
   objective: Array<number>
   equations: Array<EquationObject>
   setEquations: React.Dispatch<React.SetStateAction<Array<EquationObject>>>
@@ -13,7 +14,7 @@ export default function Equations({
   setEquations
 }: EquationsProps) {
   return (
-    <>
+    <div className="equations">
       {
         equations && equations.map((equation, index) => {
           return (
@@ -31,7 +32,7 @@ export default function Equations({
       }
 
       <ButtonAdd
-        onClick={() => {
+        onClickAdd={() => {
           const equations2 = [...equations];
           equations2.push({
             independents: Array.from(
@@ -43,8 +44,14 @@ export default function Equations({
           });
           setEquations(equations2);
         }}
+        onClickMinus={() => {
+          if (equations.length == 1) return;
+          const equations2 = [...equations];
+          equations2.pop()
+          setEquations(equations2);
+        }}
       />
 
-    </>
+    </div>
   );
 }

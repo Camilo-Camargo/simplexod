@@ -7,13 +7,14 @@ export type ExpressionAddProps = {
 export default function ExpressionAdd({
   terms,
   setTerms,
-  onClick
+  onClickAdd,
+  onClickMinus
 }: ExpressionAddProps) {
   return (
     <div
       style={{ 
         display: "flex",
-        gap: 20
+        gap: 20,
       }}
     >
       <Expression
@@ -21,7 +22,8 @@ export default function ExpressionAdd({
         setTerms={setTerms}
       />
       <ButtonAdd
-        onClick={onClick}
+        onClickAdd={onClickAdd}
+        onClickMinus={onClickMinus}
       />
     </div>
   );

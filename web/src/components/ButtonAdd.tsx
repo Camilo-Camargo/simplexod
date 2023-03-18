@@ -1,23 +1,29 @@
-import { FiPlus } from "react-icons/fi";
+import { FiMinus, FiPlus } from "react-icons/fi";
+import "./ButtonAdd.css"
 
 export type ButtonAddProps = {
-  onClick: () => void
+  onClickAdd: () => void
+  onClickMinus: () => void
 };
 
 export default function ButtonAdd({
-  onClick
+  onClickAdd,
+  onClickMinus
 }: ButtonAddProps) {
   return (
-    <div
-      style={{
-        width: "20px",
-        height: "20px",
-        borderRadius: "2px",
-        border: "1px solid black"
-      }}
-      onClick={onClick}
-    >
-      <FiPlus size="20" />
+    <div className="btn-add-minus">
+      <div
+        className="btn-add"
+        onClick={onClickAdd}
+      >
+        <FiPlus size="20" />
+      </div>
+      <div 
+        className="btn-minus"
+        onClick={onClickMinus}
+      >
+      <FiMinus size="20"/>
+      </div>
     </div>
   );
 }

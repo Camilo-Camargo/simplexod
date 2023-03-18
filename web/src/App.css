@@ -1,42 +1,89 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.simplex {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; 
+  gap: 5rem;
+  box-sizing: border-box;
+  background: #FFFEF9;
+}
+.tableau{ 
+  border-collapse: collapse;
+}
+.tableau th, .tableau td {
+    border: 1px solid black;
+    padding: .3rem;
+    text-align: center;
+}
+.simplex-objective, .simplex-restrictions{ 
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.simplex-objective-expression{
+    display: flex;
+    gap: 1rem;
+}
+.simplex-tableau{ 
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+} 
+
+
+.simplex-footer, .simplex-header{ 
+  width: 100vw;
+  height: 20vh;
+  background: #FAEDCD;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.simplex-footer-icons{
+  display: flex;
+  gap: 1rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.title { 
+  border: .1rem solid black;
+  padding: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.simplex-footer-icons img{
+  width: 5rem;
 }
 
-.card {
-  padding: 2em;
+button, select{
+  font-family: Lexend;
+  font-size: 1.8rem;
+  background: #FAEDCD;
+  border: none;
+  font-weight: 500;
+  border-radius: .5rem;
+  text-decoration: none;
+  padding: 1rem;
 }
 
-.read-the-docs {
-  color: #888;
+button:hover, select:hover{
+  color: #FAEDCD;
+  background: black;
+  cursor: pointer;
+}
+
+button:active, select:active{
+  padding: 0.9rem;
+}
+
+table th, table td{
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+table th{
+  font-weight: 300; 
 }

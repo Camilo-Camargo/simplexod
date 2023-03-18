@@ -14,16 +14,14 @@ export default function Term({
   return (
     <div style={{
       display: "flex",
+      alignItems: "center",
       gap: 5
     }}>
       <Coefficient
         value={value}
         onChange={onChange}
       />
-      <div>
-        <span>{variable}</span>
-        <span>{subindex}</span>
-      </div>
+      <span>{variable}{subindex}</span>
     </div>
   );
 }

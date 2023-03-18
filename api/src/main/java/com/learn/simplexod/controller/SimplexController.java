@@ -1,5 +1,8 @@
 package com.learn.simplexod.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,11 +23,24 @@ public class SimplexController {
 				simplexRequest.objective,
 				simplexRequest.constraints,
 				simplexRequest.constraintTypes,
-				SimplexMethodType.MAXIMIZE);
+				simplexRequest.type);
 		System.out.println(simplexRequest.objective);
+
+		ArrayList<double[][]> iterations = new ArrayList<double[][]>();
+
+		while (!simplex.checkOptimize()) {
+			double[][] iteration = new double[simplex.tableau.length][];
+			for (int i = 0; i < simplex.tableau.length; i++) {
+				iteration[i] = simplex.tableau[i].clone();
+			}
+			iterations.add(iteration);
+			simplex.iteration();
+		}
+
 		String json = "";
+
 		try {
-			json = ow.writeValueAsString(simplex.iteration());
+			json = ow.writeValueAsString(iterations);
 		} catch (JsonProcessingException e) {
 			System.out.println(e);
 		}

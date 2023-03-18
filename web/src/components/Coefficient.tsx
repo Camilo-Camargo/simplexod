@@ -17,7 +17,9 @@ export default function Coefficient({
       style={{
         width: `${value.toString().length}ch`,
         appearance: "textfield",
-        textAlign: "center"
+        textAlign: "center",
+        padding: "0.5rem",
+        fontSize: "2rem"
       }}
       type="number"
     />

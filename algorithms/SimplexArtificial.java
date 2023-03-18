@@ -1,27 +1,16 @@
-
 public class Simplex {
-  enum SimplexMethodType {
-    MAXIMIZE,
-    MINIMIZE
-  }
-
-  enum SimplexOperator {
-    GREATER_THAN,
-    LESS_THAN,
-    EQUALS
-  }
-
   private double[] objective_function;
   private double[][] constraints;
   private double[][] tableau;
-  private SimplexOperator[] contraint_types;
-  private SimplexMethodType type;
+  private String[] contraint_types;
+  private String type;
+  private int artificial = 0;
 
   public Simplex(
       double[] objective_function,
       double[][] constraints,
-      SimplexOperator[] contraint_types,
-      SimplexMethodType type) {
+      String[] contraint_types,
+      String type) {
     this.objective_function = objective_function;
     this.constraints = constraints;
     this.contraint_types = contraint_types;
@@ -29,10 +18,11 @@ public class Simplex {
     this.tableau = this.createTableau();
   }
 
-  public double[] objectiveSlack() {
+  public double[] objectiveVariables() {
+    int artificial = this.artificial;
     int constraints_len = this.constraints.length;
     int objective_len = this.objective_function.length;
-    int cols = constraints_len + objective_len + 1;
+    int cols = constraints_len + objective_len + 1 + artificial;
 
     double[] objective_function = new double[cols];
     for (int i = 0; i < cols; i++) {
@@ -46,25 +36,35 @@ public class Simplex {
     return objective_function;
   }
 
-  public double[][] constraintSlack() {
+  public double[][] constraintVariables() {
+    String[] types = this.contraint_types;
+    int artificial = 0;
+    for (int i = 0; i < types.length; i++) {
+      if (types[i].equals(">=")) {
+        artificial += 1;
+      }
+    }
+
+    this.artificial = artificial;
+
     int constraint_len = this.constraints.length; // numbers of constraints
     int unknown_len = this.objective_function.length; // unknown variables
     int constraint_len_col = unknown_len + 1; // columns of constraint with result
 
-    // add slack to the constraints
-    double[][] constraints = new double[constraint_len][constraint_len + constraint_len_col];
+    // add variables to the constraints
+    double[][] constraints = new double[constraint_len][constraint_len + constraint_len_col + artificial];
     int identity_pos = 0;
     for (int i = 0; i < constraint_len; i++) {
-      for (int j = 0; j < constraint_len + constraint_len_col; j++) {
-
-        if (j < constraint_len_col - 1) {
+      for (int j = 0; j < constraint_len + constraint_len_col + artificial; j++) {
+        if (i < constraint_len && j < constraint_len_col - 1) {
           constraints[i][j] = this.constraints[i][j];
-        } else if (j != constraint_len_col + constraint_len - 1) {
-          if (j == identity_pos + constraint_len_col - 1)
+        } else if (j != constraint_len_col + constraint_len - 1 + artificial) {
+          if (j == identity_pos + constraint_len_col - 1) {
             constraints[i][j] = 1;
+          }
         } else {
           // swap the the row of values to the last column
-          constraints[i][j] = this.constraints[i][constraint_len_col - 1];
+          constraints[i][constraint_len_col + artificial + 1] = this.constraints[i][constraint_len_col - 1];
         }
 
       }
@@ -74,8 +74,8 @@ public class Simplex {
   }
 
   public double[][] createTableau() {
-    double[] objective = objectiveSlack();
-    double[][] constraints = constraintSlack();
+    double[][] constraints = constraintVariables();
+    double[] objective = objectiveVariables();
     int rows = constraints.length + 1;
     int cols = constraints[0].length;
 
@@ -100,17 +100,11 @@ public class Simplex {
     int rows = tableau.length;
     int cols = tableau[0].length;
 
-    double most = 0;
+    double mostNegative = 0;
     for (int j = 0; j < cols; j++) {
-      double min = 0;
-      if (this.type == SimplexMethodType.MAXIMIZE) {
-        min = Math.min(tableau[rows - 1][j], most);
-      } else {
-        min = Math.max(tableau[rows - 1][j], most);
-      }
-
-      if (most != min) {
-        most = min;
+      double min = Math.min(tableau[rows - 1][j], mostNegative);
+      if (mostNegative != min) {
+        mostNegative = min;
         pivot = j;
       }
     }
@@ -124,7 +118,8 @@ public class Simplex {
     int cols = tableau[0].length;
 
     Double smallest = null;
-    for (int i = 0; i < rows - 1; i++) {
+    for (int i = 0; i < rows - 1; i++) { 
+      //TODO: add check zero division
       double ratio = tableau[i][cols - 1] / tableau[i][column];
       if (smallest == null) {
         smallest = ratio;
@@ -140,6 +135,19 @@ public class Simplex {
     return pivot;
   }
 
+  public boolean checkOptimize() {
+    int cols = this.objective_function.length;
+    int rows = this.constraints.length;
+    double[][] tableau = this.tableau;
+
+    for (int j = 0; j < cols; j++) {
+      if (tableau[rows][j] < 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public double[][] iteration() {
     double[][] tableau = this.tableau;
     int rows = tableau.length;
@@ -147,9 +155,10 @@ public class Simplex {
     int entering = pivotColumn();
     int departing = pivotRow(entering);
 
-    System.out.println("Pivot Row: " + departing);
-    System.out.println("Pivot Column: " + departing);
     // divide the pivot row with the pivot number
+    System.out.println("Pivot Row: " + departing);
+    System.out.println("Pivot Column: " + entering);
+
     double pivotNumber = tableau[departing][entering];
     for (int j = 0; j < cols; j++) {
       tableau[departing][j] /= pivotNumber;
@@ -160,10 +169,10 @@ public class Simplex {
       if (i != departing) {
         double pivot = tableau[i][entering];
         for (int j = 0; j < cols; j++) {
-          // System.out.print(tableau[i][j] + "-(" + pivot + "*" + tableau[departing][j] +
-          // ")");
-          // System.out.print("=" + (tableau[i][j] - (pivot * tableau[departing][j])));
-          // System.out.println("");
+          System.out.print(tableau[i][j] + "-(" + pivot + "*" + tableau[departing][j] +
+          ")");
+          System.out.print("=" + (tableau[i][j] - (pivot * tableau[departing][j])));
+          System.out.println("");
           tableau[i][j] -= pivot * tableau[departing][j];
         }
       }
@@ -179,53 +188,47 @@ public class Simplex {
     return tableau;
   }
 
-  public static void main(String[] args) {
-    SimplexMethodType type = SimplexMethodType.MAXIMIZE;
-    //double[] objective_function = { 5, 4 };
-    double[] objective_function = { 12, 16 };
-    SimplexOperator[] contraint_types = {
-        SimplexOperator.LESS_THAN,
-        SimplexOperator.LESS_THAN,
-        SimplexOperator.LESS_THAN,
-    };
+  @Override
+  public String toString() {
+    int rows = this.tableau.length;
+    int cols = this.tableau[0].length;
+    String msg = "";
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        msg += tableau[i][j] + " ";
+      }
+      msg += "\n";
+    }
+    return msg;
+  }
 
+  public static void main(String[] args) {
+    String type = "maximize";
+    double[] objective_function = { 3, 1, 3 };
+    String[] contraint_types = {
+        "<=",
+        "<=",
+        "<="
+    };
     double[][] constraints = {
-         { 1, 2, 40 },
-         { 1, 1, 30 },
-        //{ 6, 3, 36 },
-        //{ 2, 2, 14 },
-        //{ 5, 10, 60 },
+        { 2, 1, 1 , 2},
+        { 1, 2, 3, 5},
+        { 2, 2, 1, 6},
     };
 
     assert (contraint_types.length == constraints.length);
 
     Simplex simplex = new Simplex(objective_function, constraints, contraint_types, type);
-    for (double[] tableau : simplex.tableau) {
-      for (double tableau2 : tableau) {
-        System.out.print(tableau2 + "  ");
-      }
-      System.out.println("");
+    System.out.println(simplex);
+
+    int i = 0;
+    while (!simplex.checkOptimize()) {
+      System.out.println("---------------");
+      simplex.iteration();
+      System.out.println(simplex);
+      i++;
     }
-
-    System.out.println("-----------------------");
-
-    for (double[] tableau : simplex.iteration()) {
-      for (double tableau2 : tableau) {
-        System.out.print(tableau2 + "  ");
-      }
-      System.out.println("");
-    }
-
-    System.out.println("-----------------------");
-
-    for (double[] tableau : simplex.iteration()) {
-      for (double tableau2 : tableau) {
-        System.out.print(tableau2 + "  ");
-      }
-      System.out.println("");
-    }
-
-    System.out.println(simplex.pivotRow(simplex.pivotColumn()));
+    System.out.println("Iterations: " + i);
   }
 
 }

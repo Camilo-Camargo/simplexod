@@ -2,6 +2,9 @@
 Simplexod is a implementation of linear programming simplex method using
 Java how backend and React how front end.
 
+## Demo
+https://simplexod.learnofficial.org/
+
 ## Getting Started
 To getting started you must first compile web and then api.
 

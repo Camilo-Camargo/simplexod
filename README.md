@@ -2,6 +2,26 @@
 Simplexod is a implementation of linear programming simplex method using
 Java how backend and React how front end.
 
+## Getting Started
+To getting started you must first compile web and then api.
+
+### Web
+Go to the web folder and follow the next steps.
+1. Install dependencies
+```bash
+yarn
+```
+2. Build
+```bash
+yarn build
+```
+
+### Api
+Go to the api directory and build using
+```bash
+./gradlew build
+```
+
 ## What is simplex method?
 The simplex method is a widely used algorithm for solving 
 linear programming problems. It involves iteratively improving 
